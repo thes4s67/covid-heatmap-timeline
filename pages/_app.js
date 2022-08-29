@@ -1,7 +1,13 @@
 import '../styles/globals.css'
+import { wrapper, store } from "../src/store";
+import { Provider } from "react-redux";
+import CssBaseline from "@mui/material/CssBaseline";
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return <Provider store={store}>
+    <CssBaseline/>
+    <Component {...pageProps} />
+  </Provider>
 }
 
 export default MyApp
