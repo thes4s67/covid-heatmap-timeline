@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { baseUrl } from "../../utils/API";
+import { hashmap } from "../../utils/hashmap";
 import { formatDate, getUniqueDates } from "../../utils/helpers";
 
 export const getMoreData = createAsyncThunk(
@@ -59,7 +60,8 @@ export const mapDataSlice = createSlice({
         state.settings.rawDate = t[0];
       }
       state.data = {
-        rawData: param.payload,
+        //TODO: probably need to append rawData
+        rawData: hashmap(param.payload),
         timeline: t,
         lastDate: formatDate(t[t.length - 1]),
       };
@@ -70,7 +72,8 @@ export const mapDataSlice = createSlice({
       //do something /w state
     },
     [getMoreData.fulfilled]: (state, { payload }) => {
-      state.data.rawData = payload;
+      //TODO: need to append rawData
+      state.data.rawData = hashmap(payload);
       state.data.timeline = getUniqueDates(payload);
       console.log("its fulfilled!");
     },

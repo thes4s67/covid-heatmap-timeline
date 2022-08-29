@@ -23,9 +23,8 @@ import DrawerHeader from "../src/components/Drawer/DrawerHeader";
 import DrawerSideBar from "../src/components/Drawer/DrawerSideBar";
 import FilterBar from "../src/components/FilterBar";
 import PlayBar from "../src/components/PlayBar";
-import CountryCard from "../src/components/CountryCard";
-import StatCard from "../src/components/StatCard";
 import { baseUrl } from "../src/utils/API";
+import StatsBar from "./../src/components/StatsBar";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -115,20 +114,7 @@ const Home = ({ results }) => {
               </Typography>
             </Box>
           ) : (
-            <Grid container sx={{ p: 4 }} spacing={3}>
-              <Grid item xs={12} md={3}>
-                <CountryCard />
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <StatCard type={"Cases"} num={10000} />
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <StatCard type={"Vaccinations"} num={100000} />
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <StatCard type={"Deaths"} num={120000} />
-              </Grid>
-            </Grid>
+            <StatsBar />
           )}
         </Main>
         <DrawerSideBar />

@@ -6,7 +6,7 @@ import {
   Geography,
   ZoomableGroup,
 } from "react-simple-maps";
-import { getHexColor,getValue } from "../../utils/helpers";
+import { getHexColor, getValue } from "../../utils/helpers";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
@@ -20,7 +20,11 @@ const WorldMap = () => {
         <Geographies geography={"/data/countries-50m.json"}>
           {({ geographies }) =>
             geographies.map((geo) => {
-              const value = getValue(data, geo.properties.name, settings.rawDate)
+              const value = getValue(
+                data,
+                geo.properties.name,
+                settings.rawDate
+              );
               return (
                 <Geography
                   key={geo.rsmKey}

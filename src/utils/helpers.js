@@ -21,10 +21,14 @@ export const getHexColor = (value, country) => {
   if (value > 90) return "#782618";
 };
 
-export const getValue = (data, country, rawDate) => {
-  // console.log(data, country, rawDate, "this is 2nd hit");
-  //TODO: refactor this because this is SLOW! try to get O(1)
+export const getValue = (data, country, rawDate, type) => {
+  //TODO: type
   //TODO: feb 14 japan is black?
-  const t = data.filter((c) => c.country === country && c.date === rawDate);
-  return t.length === 0 || !t ? 0 : Number(t[0].total_cases);
+  try {
+    const cData = data.get(country);
+    const dateData = cData[rawDate];
+    return dateData ? Number(dateData["total_cases"]) : 0;
+  } catch (e) {
+    return 0;
+  }
 };
