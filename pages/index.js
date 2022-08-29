@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   updateDrawerOpen,
   updateData,
-  getMoreData,
 } from "../src/store/slices/mapDataSlice";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -12,7 +11,6 @@ import {
   Typography,
   IconButton,
   Divider,
-  Grid,
 } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
@@ -69,7 +67,6 @@ const Home = ({ results }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(results.slice(0, 5));
     dispatch(updateData(results));
   }, []);
 

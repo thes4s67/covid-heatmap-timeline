@@ -23,7 +23,8 @@ const WorldMap = () => {
               const value = getValue(
                 data,
                 geo.properties.name,
-                settings.rawDate
+                settings.rawDate,
+                settings.filter
               );
               return (
                 <Geography

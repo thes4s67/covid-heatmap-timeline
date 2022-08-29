@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { useScrollEvent } from "../../hooks/useScrollEvent";
 import { useSelector, useDispatch } from "react-redux";
-import { updateTimeline } from "../../store/slices/mapDataSlice";
 import { formatDate } from "../../utils/helpers";
 import Timeline from "@mui/lab/Timeline";
 import TimelineItem from "@mui/lab/TimelineItem";
@@ -17,6 +16,7 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import TimelineEntry from "./TimelineEntry";
 
 const TimelineBar = () => {
   const [scroll] = useScrollEvent();
@@ -62,72 +62,28 @@ const TimelineBar = () => {
           const tDate = formatDate(c).split(" ");
           if (i !== data.timeline.length - 1) {
             return (
-              <>
-                <TimelineItem>
-                  <TimelineSeparator>
-                    <TimelineDot
-                      color={settings.timelineIdx === i ? "error" : "warning"}
-                    />
-                    <TimelineConnector />
-                  </TimelineSeparator>
-                  <TimelineContent>
-                    <Typography
-                      onClick={() =>
-                        dispatch(
-                          updateTimeline({
-                            idx: i,
-                            date: formatDate(c),
-                            raw: c,
-                          })
-                        )
-                      }
-                      sx={{
-                        fontSize: 16,
-                        color: "#fff",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {tDate[0]}
-                      <br />
-                      {`${tDate[1]} ${tDate[2]}`}
-                    </Typography>
-                  </TimelineContent>
-                </TimelineItem>
-              </>
+              <TimelineEntry
+                active={settings.timelineIdx === i}
+                idx={i}
+                date={c}
+              >
+                {tDate[0]}
+                <br />
+                {`${tDate[1]} ${tDate[2]}`}
+              </TimelineEntry>
             );
           } else {
             return (
               <>
-                <TimelineItem>
-                  <TimelineSeparator>
-                    <TimelineDot />
-                    <TimelineConnector />
-                  </TimelineSeparator>
-                  <TimelineContent>
-                    <Typography
-                      onClick={() =>
-                        dispatch(
-                          updateTimeline({
-                            idx: i,
-                            date: formatDate(c),
-                            raw: c,
-                          })
-                        )
-                      }
-                      sx={{
-                        fontSize: 16,
-                        color: "#fff",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {tDate[0]}
-                      <br />
-                      {`${tDate[1]} ${tDate[2]}`}
-                    </Typography>
-                  </TimelineContent>
-                </TimelineItem>
+                <TimelineEntry
+                  active={settings.timelineIdx === i}
+                  idx={i}
+                  date={c}
+                >
+                  {tDate[0]}
+                  <br />
+                  {`${tDate[1]} ${tDate[2]}`}
+                </TimelineEntry>
                 <Box
                   sx={{
                     display: "flex",

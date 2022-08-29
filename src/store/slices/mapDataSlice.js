@@ -26,7 +26,7 @@ export const mapDataSlice = createSlice({
     drawerOpen: true,
     selectedCountry: "",
     settings: {
-      filter: "cases",
+      filter: "total_cases",
       orderBy: "asc",
       sortBy: "daily",
       lastMonth: "",

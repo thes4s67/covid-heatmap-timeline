@@ -21,14 +21,38 @@ export const getHexColor = (value, country) => {
   if (value > 90) return "#782618";
 };
 
-export const getValue = (data, country, rawDate, type) => {
-  //TODO: type
-  //TODO: feb 14 japan is black?
+export const getCountryCode = (data, country) => {
   try {
     const cData = data.get(country);
-    const dateData = cData[rawDate];
-    return dateData ? Number(dateData["total_cases"]) : 0;
+    for (let x of Object.keys(cData)) {
+      return cData[x].country_code;
+    }
   } catch (e) {
     return 0;
+  }
+};
+
+export const getValue = (data, country, rawDate, filter) => {
+  //TODO: feb 14 japan is black?
+  if (country === "World") {
+    let total = 0;
+    for (let [key, value] of data) {
+      total += value[rawDate]
+        ? Number(value[rawDate][filter])
+        : 0;
+    }
+    return total < 0 ? 0 : total;
+  } else {
+    try {
+      const cData = data.get(country);
+      const dateData = cData[rawDate];
+      return dateData
+        ? isNaN(Number(dateData[filter]))
+          ? dateData[filter]
+          : Number(dateData[filter])
+        : 0;
+    } catch (e) {
+      return 0;
+    }
   }
 };
