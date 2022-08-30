@@ -14,7 +14,7 @@ client.connect();
 export const selectDataByDay = (start, end) => {
   return new Promise((resolve, reject) => {
     client.query(
-      "select * from covid_cases where date between $1 and $2",
+      "select to_char(date, 'YYYY-MM-DD') as fDate, * from covid_cases where date between $1 and $2",
       [start, end],
       (err, res) => {
         if (err) return reject(err);

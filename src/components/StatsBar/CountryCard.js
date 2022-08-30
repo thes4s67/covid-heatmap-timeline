@@ -33,7 +33,7 @@ const CountryCard = () => {
                     country_code: getValue(
                       data,
                       country,
-                      settings.rawDate,
+                      settings.currDate,
                       "country_code"
                     ),
                   });
@@ -58,7 +58,7 @@ const CountryCard = () => {
                     country_code: getValue(
                       data,
                       country,
-                      settings.rawDate,
+                      settings.currDate,
                       "country_code"
                     ),
                   });
@@ -81,20 +81,40 @@ const CountryCard = () => {
             as of {settings.currDate}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
-            Recorded Cases:{" "}
-            {getValue(data, country, settings.rawDate, "total_cases")}
+            Cases:{" "}
+            {getValue(
+              data,
+              country,
+              settings.currDate,
+              "total_cases"
+            ).toLocaleString()}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
-            Recorded Vaccinations:{" "}
-            {getValue(data, country, settings.rawDate, "total_vaccinations")}
+            Vaccinations:{" "}
+            {getValue(
+              data,
+              country,
+              settings.currDate,
+              "total_vaccinations"
+            ).toLocaleString()}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
-            Recorded Boosters:{" "}
-            {getValue(data, country, settings.rawDate, "total_boosters")}
+            Boosters:{" "}
+            {getValue(
+              data,
+              country,
+              settings.currDate,
+              "total_boosters"
+            ).toLocaleString()}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
-            Recorded Deaths:{" "}
-            {getValue(data, country, settings.rawDate, "total_deaths")}
+            Deaths:{" "}
+            {getValue(
+              data,
+              country,
+              settings.currDate,
+              "total_deaths"
+            ).toLocaleString()}
           </Typography>
         </Box>
       </Card>

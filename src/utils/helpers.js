@@ -1,51 +1,48 @@
 import moment from "moment";
 //TODO: probably update w/ order by var
 export const getUniqueDates = (data) => {
-  return [...new Set(data.map((c) => c.date))];
+  return [...new Set(data.map((c) => c.fdate))];
 };
 
-export const formatDate = (date) => {
-  return moment(date).format("MMM DD YYYY");
-};
 
-export const getHexColor = (value, country) => {
+
+export const getHexColor = (value) => {
   if (value === 0) return "#f3f3f3";
-  if (value > 0 && value < 10) return "#ffedea";
-  if (value > 10 && value < 20) return "#ffcec5";
-  if (value > 20 && value < 30) return "#ffad9f";
-  if (value > 30 && value < 40) return "#ff8a75";
-  if (value > 50 && value < 60) return "#ff5533";
-  if (value > 60 && value < 70) return "#e2492d";
-  if (value > 70 && value < 80) return "#be3d26";
-  if (value > 80 && value < 90) return "#9a311f";
-  if (value > 90) return "#782618";
+  if (value > 0 && value.toString().length <= 2) return "#ffedea";
+  if (value.toString().length === 3) return "#ffcec5";
+  if (value.toString().length === 4) return "#ffad9f";
+  if (value.toString().length === 5) return "#FFAAAA";
+  if (value.toString().length === 6) return "#ff8a75";
+  if (value.toString().length === 7) return "#ff5533";
+  if (value.toString().length === 8) return "#e2492d";
+  if (value.toString().length === 9) return "#be3d26";
+  if (value.toString().length === 10) return "#9a311f";
+  if (value.toString().length === 11) return "#782618";
+  if (value.toString().length >= 12) return "#57180e";
 };
 
 export const getCountryCode = (data, country) => {
   try {
-    const cData = data.get(country);
-    for (let x of Object.keys(cData)) {
-      return cData[x].country_code;
+    const code = data[country];
+    for (let c of Object.keys(code)) {
+      return code[c].country_code;
     }
   } catch (e) {
     return 0;
   }
 };
 
-export const getValue = (data, country, rawDate, filter) => {
-  //TODO: feb 14 japan is black?
+export const getValue = (data, country, currDate, filter) => {
   if (country === "World") {
     let total = 0;
-    for (let [key, value] of data) {
-      total += value[rawDate]
-        ? Number(value[rawDate][filter])
-        : 0;
+    for (let key of Object.keys(data)) {
+      total += data[key][currDate] ? Number(data[key][currDate][filter]) : 0;
     }
     return total < 0 ? 0 : total;
   } else {
     try {
-      const cData = data.get(country);
-      const dateData = cData[rawDate];
+      const cData = data[country];
+      const dateData = cData[currDate];
       return dateData
         ? isNaN(Number(dateData[filter]))
           ? dateData[filter]

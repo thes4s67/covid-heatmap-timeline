@@ -6,7 +6,6 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import { updateTimeline } from "../../store/slices/mapDataSlice";
-import { formatDate } from "../../utils/helpers";
 
 const TimelineEntry = ({ active, idx, date, children }) => {
   const dispatch = useDispatch();
@@ -15,13 +14,13 @@ const TimelineEntry = ({ active, idx, date, children }) => {
       <TimelineSeparator>
         <Box sx={{ cursor: "pointer" }}>
           <TimelineDot
+            variant={active ? "outlined" : "filled"}
             color={active ? "error" : "warning"}
             onClick={() =>
               dispatch(
                 updateTimeline({
                   idx,
-                  date: formatDate(date),
-                  raw: date,
+                  date,
                 })
               )
             }
@@ -35,8 +34,7 @@ const TimelineEntry = ({ active, idx, date, children }) => {
             dispatch(
               updateTimeline({
                 idx,
-                date: formatDate(date),
-                raw: date,
+                date,
               })
             )
           }

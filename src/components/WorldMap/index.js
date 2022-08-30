@@ -8,8 +8,6 @@ import {
 } from "react-simple-maps";
 import { getHexColor, getValue } from "../../utils/helpers";
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
-
 const WorldMap = () => {
   const data = useSelector((state) => state.mapData.data.rawData);
   const settings = useSelector((state) => state.mapData.settings);
@@ -23,7 +21,7 @@ const WorldMap = () => {
               const value = getValue(
                 data,
                 geo.properties.name,
-                settings.rawDate,
+                settings.currDate,
                 settings.filter
               );
               return (
@@ -36,10 +34,9 @@ const WorldMap = () => {
                   onMouseLeave={() => {
                     // dispatch(updateCountry(""));
                   }}
-                  // fill={geo.id === "818" ? "#782618" : "#FFF"}
                   style={{
                     default: {
-                      fill: getHexColor(value, geo.properties.name),
+                      fill: getHexColor(value),
                       outline: "none",
                     },
                     hover: {

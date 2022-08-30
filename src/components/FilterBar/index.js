@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { ButtonGroup, Button, Box, Typography } from "@mui/material";
+import moment from 'moment';
 
 const FilterBar = () => {
   const settings = useSelector((state) => state.mapData.settings);
@@ -17,7 +18,7 @@ const FilterBar = () => {
     >
       <Box sx={{ display: "flex" }}>
         <Typography variant="subtitle2" sx={{ color: "#fff", fontWeight: 400 }}>
-          {settings.currDate}
+          {moment(settings.currDate).format("MMM DD YYYY")}
         </Typography>
       </Box>
       <ButtonGroup size="small" color="error">

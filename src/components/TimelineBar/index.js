@@ -1,20 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  IconButton,
-  CircularProgress,
-  Button,
-  Typography,
-} from "@mui/material";
-import { useScrollEvent } from "../../hooks/useScrollEvent";
 import { useSelector, useDispatch } from "react-redux";
-import { formatDate } from "../../utils/helpers";
+import { Box, IconButton, CircularProgress, Button } from "@mui/material";
+import { getMoreData } from "../../store/slices/mapDataSlice";
+import { useScrollEvent } from "../../hooks/useScrollEvent";
+import moment from "moment";
 import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TimelineEntry from "./TimelineEntry";
 
@@ -24,20 +14,18 @@ const TimelineBar = () => {
   const settings = useSelector((state) => state.mapData.settings);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  useEffect(() => {
-    setLoading(false);
-  }, [data]);
 
   const handleLoadMore = () => {
     setLoading(true);
-    setTimeout(() => {
-      let temp = data;
-      let last = temp[temp.length - 1];
-      for (let i = 0; i < 20; i++) {
-        temp.push(Number(last) + i + 1);
-      }
-      setData([...temp]);
-    }, [3000]);
+    const start = moment(data.lastDate).add(1, "d");
+  dispatch(
+      getMoreData({
+        sort: settings.sortBy,
+        start: moment(start).format("YYYY-MM-DD"),
+        end: moment(start).add(29, "d").format("YYYY-MM-DD"),
+      })
+    );
+    setLoading(false);
   };
   return (
     <>
@@ -59,7 +47,7 @@ const TimelineBar = () => {
       </Box>
       <Timeline position="alternate">
         {data.timeline.map((c, i) => {
-          const tDate = formatDate(c).split(" ");
+          const tDate = moment(c).format("MMM DD YYYY").split(" ");
           if (i !== data.timeline.length - 1) {
             return (
               <TimelineEntry

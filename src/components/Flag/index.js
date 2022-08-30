@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 const Flag = ({ country_code }) => {
-  console.log(country_code, "CC");
   return (
     <Box sx={{ height: 25, width: 25 }}>
       <img

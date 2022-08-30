@@ -2,7 +2,6 @@ import { selectDataByDay, selectDataByMonth } from "../../src/database";
 
 const handler = async (req, res) => {
   if (req.method === "GET") {
-    console.log(req.query);
     const { sort, start, end } = req.query;
     let data;
     if (sort === "daily") {
