@@ -5,7 +5,7 @@ import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
-import { updateTimeline } from "../../store/slices/mapDataSlice";
+import { updateSettings } from "../../store/slices/mapDataSlice";
 
 const TimelineEntry = ({ active, idx, date, children }) => {
   const dispatch = useDispatch();
@@ -18,9 +18,9 @@ const TimelineEntry = ({ active, idx, date, children }) => {
             color={active ? "error" : "warning"}
             onClick={() =>
               dispatch(
-                updateTimeline({
-                  idx,
-                  date,
+                updateSettings({
+                  timelineIdx: idx,
+                  currDate: date,
                 })
               )
             }
@@ -32,9 +32,9 @@ const TimelineEntry = ({ active, idx, date, children }) => {
         <Typography
           onClick={() =>
             dispatch(
-              updateTimeline({
-                idx,
-                date,
+              updateSettings({
+                timelineIdx: idx,
+                currDate: date,
               })
             )
           }

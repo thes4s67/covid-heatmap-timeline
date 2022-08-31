@@ -124,7 +124,7 @@ export default Home;
 
 export const getServerSideProps = async (context) => {
   const res = await axios.get(
-    `${baseUrl}/api/data?sort=daily&start=2020-01-22&end=2020-02-20`
+    `${baseUrl}/api/data?sort=daily&start=2020-01-22&end=2020-02-20&orderBy=asc`
   );
   const { results } = await res.data;
   return {

@@ -2,18 +2,18 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { baseUrl } from "../../utils/API";
 import { hashmap } from "../../utils/hashmap";
-import { getUniqueDates } from "../../utils/helpers";
+import { getUniqueDates, getNextDate } from "../../utils/helpers";
+import moment from "moment";
 
 export const getMoreData = createAsyncThunk(
   "mapData/getMoreData",
   async (arg, { rejectWithValue }) => {
     try {
       const { data } = await axios.get(
-        `${baseUrl}/api/data?sort=${arg.sort}&start=${arg.start}&end=${arg.end}`
+        `${baseUrl}/api/data?sort=${arg.sort}&start=${arg.start}&end=${arg.end}&orderBy=${arg.orderBy}`
       );
       return data;
     } catch (err) {
-      console.log("error", err);
       rejectWithValue(err.response.data);
     }
   }
@@ -28,14 +28,44 @@ export const mapDataSlice = createSlice({
       filter: "total_cases",
       orderBy: "asc",
       sortBy: "daily",
-      timelineIdx: 0,
-      currDate: "",
     },
     data: {
-      lastDate: "2020-02-20",
-      total: 0,
-      rawData: [],
-      timeline: [],
+      daily: {
+        asc: {
+          nextDate: "2020-02-20",
+          total: 0,
+          rawData: {},
+          timeline: [],
+          currDate: "",
+          timelineIdx: null,
+        },
+        desc: {
+          nextDate: "",
+          total: 0,
+          rawData: {},
+          timeline: [],
+          currDate: "",
+          timelineIdx: null,
+        },
+      },
+      monthly: {
+        asc: {
+          nextDate: "",
+          total: 0,
+          rawData: {},
+          timeline: [],
+          currDate: "",
+          timelineIdx: null,
+        },
+        desc: {
+          nextDate: "",
+          total: 0,
+          rawData: {},
+          timeline: [],
+          currDate: "",
+          timelineIdx: null,
+        },
+      },
     },
   },
   reducers: {
@@ -45,24 +75,43 @@ export const mapDataSlice = createSlice({
     updateCountry: (state, param) => {
       state.selectedCountry = param.payload;
     },
-    updateCurrDate: (state, param) => {
-      state.settings.currDate = param.payload;
-      console.log(param.payload, "updated");
-    },
-    updateSettings: (state, param) => {},
-    updateTimeline: (state, param) => {
-      state.settings.timelineIdx = param.payload.idx;
-      state.settings.currDate = param.payload.date;
+    updateSettings: (state, param) => {
+      if (param.payload.filter) state.settings.filter = param.payload.filter;
+      if (param.payload.timelineIdx !== null && param.payload.currDate) {
+        state.data = {
+          ...state.data,
+          [state.settings.sortBy]: {
+            ...state.data[state.settings.sortBy],
+            [state.settings.orderBy]: {
+              ...state.data[state.settings.sortBy][state.settings.orderBy],
+              timelineIdx: param.payload.timelineIdx,
+              currDate: param.payload.currDate,
+            },
+          },
+        };
+      }
+      if (param.payload.orderBy && param.payload.sortBy) {
+        state.settings.orderBy = param.payload.orderBy;
+        state.settings.sortBy = param.payload.sortBy;
+        state.selectedCountry = "";
+      }
     },
     updateData: (state, param) => {
       const t = getUniqueDates(param.payload);
-      if (state.settings.currDate === "") {
-        state.settings.currDate = t[0];
-      }
       state.data = {
-        rawData: hashmap(param.payload),
-        timeline: t,
-        lastDate: t[t.length - 1],
+        ...state.data,
+        daily: {
+          ...state.data.daily,
+          asc: {
+            rawData: hashmap(param.payload),
+            timeline: t,
+            nextDate: moment(t[t.length - 1])
+              .add(1, "d")
+              .format("YYYY-MM-DD"),
+            timelineIdx: 0,
+            currDate: t[0],
+          },
+        },
       };
     },
   },
@@ -71,15 +120,37 @@ export const mapDataSlice = createSlice({
       //do something /w state
     },
     [getMoreData.fulfilled]: (state, { payload, meta }) => {
-      //TODO: need to work on sort
-      // console.log(meta, "meta");
-      state.data.lastDate = meta.arg.end;
-      state.data.rawData = hashmap(payload.results, state.data.rawData);
-      state.data.timeline = [].concat.apply(
-        [],
-        [...state.data.timeline, getUniqueDates(payload.results)]
-      );
-      console.log("its fulfilled!");
+
+      const { sort, start, end, orderBy } = meta.arg;
+      state.data = {
+        ...state.data,
+        [sort]: {
+          ...state.data[sort],
+          [orderBy]: {
+            ...state.data[sort][orderBy],
+            nextDate: getNextDate(sort, orderBy, payload.results),
+            rawData: hashmap(
+              payload.results,
+              state.data[sort][orderBy].rawData
+            ),
+            timeline: [].concat.apply(
+              [],
+              [
+                ...state.data[sort][orderBy].timeline,
+                getUniqueDates(payload.results),
+              ]
+            ),
+            currDate:
+              state.data[sort][orderBy].currDate === ""
+                ? payload.results[0].fdate
+                : state.data[sort][orderBy].currDate,
+            timelineIdx:
+              state.data[sort][orderBy].timelineIdx === null
+                ? 0
+                : state.data[sort][orderBy].timelineIdx,
+          },
+        },
+      };
     },
     [getMoreData.rejected]: (state, { payload }) => {
       //do something /w state
@@ -87,13 +158,7 @@ export const mapDataSlice = createSlice({
   },
 });
 
-export const {
-  updateDrawerOpen,
-  updateCountry,
-  updateSettings,
-  updateData,
-  updateTimeline,
-  updateCurrDate,
-} = mapDataSlice.actions;
+export const { updateDrawerOpen, updateCountry, updateSettings, updateData } =
+  mapDataSlice.actions;
 
 export default mapDataSlice.reducer;

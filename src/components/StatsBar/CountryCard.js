@@ -6,18 +6,21 @@ import { updateCountry } from "../../store/slices/mapDataSlice";
 import Flag from "../Flag";
 import FlagIcon from "@mui/icons-material/Flag";
 import LanguageIcon from "@mui/icons-material/Language";
+import moment from "moment";
 
 const CountryCard = () => {
-  const data = useSelector((state) => state.mapData.data.rawData);
-  const country = useSelector((state) => state.mapData.selectedCountry);
   const settings = useSelector((state) => state.mapData.settings);
+  const data = useSelector(
+    (state) => state.mapData.data[settings.sortBy][settings.orderBy]
+  );
+  const country = useSelector((state) => state.mapData.selectedCountry);
   const [curr, setCurr] = useState({});
   const dispatch = useDispatch();
   return (
     <>
       <Card sx={{ p: 3, backgroundColor: "#000" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Flag country_code={getCountryCode(data, country)} />
+          <Flag country_code={getCountryCode(data.rawData, country)} />
           {country !== "World" ? (
             <Tooltip title={"World Data"}>
               <LanguageIcon
@@ -31,9 +34,9 @@ const CountryCard = () => {
                   setCurr({
                     country,
                     country_code: getValue(
-                      data,
+                      data.rawData,
                       country,
-                      settings.currDate,
+                      data.currDate,
                       "country_code"
                     ),
                   });
@@ -56,7 +59,7 @@ const CountryCard = () => {
                   setCurr({
                     country,
                     country_code: getValue(
-                      data,
+                      data.rawData,
                       country,
                       settings.currDate,
                       "country_code"
@@ -78,41 +81,44 @@ const CountryCard = () => {
             variant="subtitle2"
             sx={{ color: "#fff", fontWeight: 350 }}
           >
-            as of {settings.currDate}
+            {settings.sortBy === "daily" ? "as of " : "month of "}{" "}
+            {settings.sortBy === "daily"
+              ? moment(data.currDate).format("MMM DD YYYY")
+              : moment(data.currDate).format("MMM YYYY")}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
             Cases:{" "}
             {getValue(
-              data,
+              data.rawData,
               country,
-              settings.currDate,
+              data.currDate,
               "total_cases"
             ).toLocaleString()}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
             Vaccinations:{" "}
             {getValue(
-              data,
+              data.rawData,
               country,
-              settings.currDate,
+              data.currDate,
               "total_vaccinations"
             ).toLocaleString()}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
             Boosters:{" "}
             {getValue(
-              data,
+              data.rawData,
               country,
-              settings.currDate,
+              data.currDate,
               "total_boosters"
             ).toLocaleString()}
           </Typography>
           <Typography variant="h6" sx={{ color: "#fff", fontWeight: 450 }}>
             Deaths:{" "}
             {getValue(
-              data,
+              data.rawData,
               country,
-              settings.currDate,
+              data.currDate,
               "total_deaths"
             ).toLocaleString()}
           </Typography>

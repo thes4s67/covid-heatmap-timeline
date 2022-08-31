@@ -1,31 +1,102 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Box, IconButton, CircularProgress, Button } from "@mui/material";
-import { getMoreData } from "../../store/slices/mapDataSlice";
+import { getMoreData, updateSettings } from "../../store/slices/mapDataSlice";
 import { useScrollEvent } from "../../hooks/useScrollEvent";
 import moment from "moment";
 import Timeline from "@mui/lab/Timeline";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TimelineEntry from "./TimelineEntry";
+import { getDates } from "../../utils/helpers";
 
 const TimelineBar = () => {
   const [scroll] = useScrollEvent();
-  const data = useSelector((state) => state.mapData.data);
   const settings = useSelector((state) => state.mapData.settings);
+  const data = useSelector(
+    (state) => state.mapData.data[settings.sortBy][settings.orderBy]
+  );
+  const tempData = useSelector((state) => state.mapData.data);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const cSettings = useRef();
+  cSettings.current = { sortBy: settings.sortBy, orderBy: settings.orderBy };
   const dispatch = useDispatch();
 
-  const handleLoadMore = () => {
+  const handleLoad = (type) => {
     setLoading(true);
-    const start = moment(data.lastDate).add(1, "d");
-  dispatch(
-      getMoreData({
-        sort: settings.sortBy,
-        start: moment(start).format("YYYY-MM-DD"),
-        end: moment(start).add(29, "d").format("YYYY-MM-DD"),
-      })
-    );
+    if (type === "sort") {
+      cSettings.current = {
+        orderBy: settings.orderBy,
+        sortBy: settings.sortBy === "daily" ? "monthly" : "daily",
+      };
+      dispatch(
+        updateSettings({
+          orderBy: settings.orderBy,
+          sortBy: settings.sortBy === "daily" ? "monthly" : "daily",
+        })
+      );
+    } else {
+      cSettings.current = {
+        orderBy: settings.orderBy === "asc" ? "desc" : "asc",
+        sortBy: settings.sortBy,
+      };
+      dispatch(
+        updateSettings({
+          orderBy: settings.orderBy === "asc" ? "desc" : "asc",
+          sortBy: settings.sortBy,
+        })
+      );
+    }
+    handleLoadMore("load");
     setLoading(false);
+  };
+
+  const formatDate = (date) => {
+    if (settings.sortBy === "daily") {
+      return (
+        <>
+          {date[0]}
+          <br />
+          {`${date[1]} ${date[2]}`}
+        </>
+      );
+    }
+    else {
+return(      <>
+  {date[0]}
+  <br />
+  {date[2]}
+</>)
+    }
+  };
+
+  const handleLoadMore = (type) => {
+    //Load more data depending on sort/orderBy
+    const { sortBy, orderBy } = cSettings.current;
+    let dates = {};
+    const tData = tempData[sortBy][orderBy];
+    if (type === "load" && Object.keys(tData.rawData).length === 0) {
+      dates = getDates(sortBy, orderBy, tData.nextDate);
+      dispatch(
+        getMoreData({
+          sort: sortBy,
+          start: dates.start,
+          end: dates.end,
+          orderBy: orderBy,
+        })
+      );
+    } else if (type === "loadMore") {
+      //LoadMore
+      dates = getDates(settings.sortBy, settings.orderBy, data.nextDate);
+      dispatch(
+        getMoreData({
+          sort: sortBy,
+          start: dates.start,
+          end: dates.end,
+          orderBy: orderBy,
+        })
+      );
+    }
   };
   return (
     <>
@@ -38,62 +109,89 @@ const TimelineBar = () => {
           justifyContent: "space-around",
         }}
       >
-        <Button variant="contained" color={"error"}>
-          Asc
+        <Button
+          variant="contained"
+          color={"error"}
+          size="small"
+          onClick={() => handleLoad("sort")}
+        >
+          {settings.sortBy}
         </Button>
-        <Button variant="contained" color={"error"}>
-          Daily
+        <Button
+          variant="contained"
+          color={"error"}
+          size="small"
+          onClick={() => handleLoad("orderBy")}
+        >
+          {settings.orderBy}
         </Button>
       </Box>
       <Timeline position="alternate">
-        {data.timeline.map((c, i) => {
-          const tDate = moment(c).format("MMM DD YYYY").split(" ");
-          if (i !== data.timeline.length - 1) {
-            return (
-              <TimelineEntry
-                active={settings.timelineIdx === i}
-                idx={i}
-                date={c}
-              >
-                {tDate[0]}
-                <br />
-                {`${tDate[1]} ${tDate[2]}`}
-              </TimelineEntry>
-            );
-          } else {
-            return (
-              <>
+        {loading ? (
+          <Box
+            sx={{
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress color="error" />
+          </Box>
+        ) : (
+          data.timeline.map((c, i) => {
+            const tDate = moment(c).format("MMM DD YYYY").split(" ");
+            if (i !== data.timeline.length - 1) {
+              return (
                 <TimelineEntry
-                  active={settings.timelineIdx === i}
+                  key={`${c}`}
+                  active={data.timelineIdx === i}
                   idx={i}
                   date={c}
                 >
-                  {tDate[0]}
-                  <br />
-                  {`${tDate[1]} ${tDate[2]}`}
+                  {formatDate(tDate)}
                 </TimelineEntry>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mt: 2,
-                  }}
-                >
-                  {!loading ? (
-                    <IconButton onClick={() => handleLoadMore()}>
-                      <AddCircleIcon
-                        sx={{ width: "50px", height: "50px", color: "#fff" }}
-                      />
-                    </IconButton>
-                  ) : (
-                    <CircularProgress color="error" />
-                  )}
-                </Box>
-              </>
-            );
-          }
-        })}
+              );
+            } else {
+              return (
+                <>
+                  <TimelineEntry
+                    key={c}
+                    active={data.timelineIdx === i}
+                    idx={i}
+                    date={c}
+                  >
+                   {formatDate(tDate)}
+                  </TimelineEntry>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mt: 2,
+                    }}
+                  >
+                    {!loadingMore ? (
+                      <IconButton
+                        onClick={() => {
+                          setLoadingMore(true);
+                          handleLoadMore("loadMore");
+                          setLoadingMore(false);
+                        }}
+                      >
+                        <AddCircleIcon
+                          sx={{ width: "50px", height: "50px", color: "#fff" }}
+                        />
+                      </IconButton>
+                    ) : (
+                      <CircularProgress color="error" />
+                    )}
+                  </Box>
+                </>
+              );
+            }
+          })
+        )}
       </Timeline>
     </>
   );

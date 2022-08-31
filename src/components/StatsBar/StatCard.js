@@ -4,17 +4,27 @@ import ArticleIcon from "@mui/icons-material/Article";
 import { useCounter } from "../../hooks/useCounter";
 import { getValue } from "../../utils/helpers";
 
-const getProperty = (type) => {
-  if (type === "Cases") return "daily_cases";
-  if (type === "Vaccinations") return "daily_vaccinations";
-  if (type === "Deaths") return "daily_deaths";
+const getProperty = (type, sortBy) => {
+  if (type === "Cases")
+    return sortBy === "daily" ? "daily_cases" : "total_cases";
+  if (type === "Vaccinations")
+    return sortBy === "daily" ? "daily_vaccinations" : "total_vaccinations";
+  if (type === "Deaths")
+    return sortBy === "daily" ? "daily_deaths" : "total_deaths";
 };
 
 const StatCard = ({ type }) => {
-  const data = useSelector((state) => state.mapData.data.rawData);
   const country = useSelector((state) => state.mapData.selectedCountry);
   const settings = useSelector((state) => state.mapData.settings);
-  const num = getValue(data, country, settings.currDate, getProperty(type));
+  const data = useSelector(
+    (state) => state.mapData.data[settings.sortBy][settings.orderBy]
+  );
+  const num = getValue(
+    data.rawData,
+    country,
+    data.currDate,
+    getProperty(type, settings.sortBy)
+  );
   const [count] = useCounter(num);
 
   return (

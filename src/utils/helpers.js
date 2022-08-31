@@ -1,10 +1,74 @@
 import moment from "moment";
-//TODO: probably update w/ order by var
 export const getUniqueDates = (data) => {
   return [...new Set(data.map((c) => c.fdate))];
 };
 
+export const sleep = (seconds) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
 
+export const getNextDate = (sortBy, orderBy, data) => {
+  if (sortBy === "daily" && orderBy === "asc")
+    return moment(data[data.length - 1].fdate)
+      .add(1, "d")
+      .format("YYYY-MM-DD");
+  if (sortBy === "daily" && orderBy === "desc")
+    return moment(data[data.length - 1].fdate)
+      .subtract(1, "d")
+      .format("YYYY-MM-DD");
+  if (sortBy === "monthly" && orderBy === "asc")
+    return moment(data[data.length - 1].date)
+      .add(1, "d")
+      .format("YYYY-MM-DD");
+  if (sortBy === "monthly" && orderBy === "desc") {
+    let date = data[data.length - 1].date;
+    date = moment(date).subtract(1, "year");
+    date = moment(date).startOf("month").format("YYYY-MM-DD");
+    return date;
+  }
+};
+
+export const getDates = (sortBy, orderBy, nextDate) => {
+  if (sortBy === "daily") {
+    if (orderBy === "asc") {
+      return {
+        start: nextDate,
+        end: moment(nextDate).add(29, "d").format("YYYY-MM-DD"),
+      };
+    } else {
+      //desc
+      return {
+        start:
+          nextDate !== ""
+            ? moment(nextDate).subtract(29, "d").format("YYYY-MM-DD")
+            : "2022-07-09",
+        end: nextDate !== "" ? nextDate : "2022-08-07",
+      };
+    }
+  } else {
+    //monthly
+    if (orderBy === "asc") {
+      return {
+        start: nextDate !== "" ? nextDate : "2020-01-01",
+        end:
+          nextDate !== ""
+            ? moment(nextDate).endOf("year").format("YYYY-MM-DD")
+            : "2020-12-31",
+      };
+    } else {
+      //desc
+      return {
+        start: nextDate !== "" ? nextDate : "2022-01-01",
+        end:
+          nextDate !== ""
+            ? moment(nextDate).endOf("year").format("YYYY-MM-DD")
+            : "2022-12-31",
+      };
+    }
+  }
+};
 
 export const getHexColor = (value) => {
   if (value === 0) return "#f3f3f3";

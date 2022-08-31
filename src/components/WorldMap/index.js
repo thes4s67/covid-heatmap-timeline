@@ -9,8 +9,10 @@ import {
 import { getHexColor, getValue } from "../../utils/helpers";
 
 const WorldMap = () => {
-  const data = useSelector((state) => state.mapData.data.rawData);
   const settings = useSelector((state) => state.mapData.settings);
+  const data = useSelector(
+    (state) => state.mapData.data[settings.sortBy][settings.orderBy]
+  );
   const dispatch = useDispatch();
   return (
     <ComposableMap projection="geoEqualEarth" height={295}>
@@ -19,9 +21,9 @@ const WorldMap = () => {
           {({ geographies }) =>
             geographies.map((geo) => {
               const value = getValue(
-                data,
+                data.rawData,
                 geo.properties.name,
-                settings.currDate,
+                data.currDate,
                 settings.filter
               );
               return (

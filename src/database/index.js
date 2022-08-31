@@ -11,27 +11,39 @@ const client = new Client({
 });
 client.connect();
 
-export const selectDataByDay = (start, end) => {
+export const selectDataByDay = (start, end, orderBy) => {
   return new Promise((resolve, reject) => {
-    client.query(
-      "select to_char(date, 'YYYY-MM-DD') as fDate, * from covid_cases where date between $1 and $2",
-      [start, end],
-      (err, res) => {
-        if (err) return reject(err);
-        return resolve(res.rows);
-      }
-    );
+    let query = "";
+    if (orderBy === "desc") {
+      query =
+        "select to_char(date, 'YYYY-MM-DD') as fDate, * from covid_cases where date between $1 and $2 order by date desc";
+    } else {
+      query =
+        "select to_char(date, 'YYYY-MM-DD') as fDate, * from covid_cases where date between $1 and $2";
+    }
+    client.query(query, [start, end], (err, res) => {
+      if (err) return reject(err);
+      return resolve(res.rows);
+    });
   });
 };
-export const selectDataByMonth = (start, end) => {
+export const selectDataByMonth = (start, end, orderBy) => {
   return new Promise((resolve, reject) => {
-    client.query(
-      "select * from covid_cases where date between $1 and $2",
-      [start, end],
-      (err, res) => {
-        if (err) return reject(err);
-        return resolve(res.rows);
+    let query = "";
+    if (orderBy === "desc") {
+      //the 2022-08-07 is hardcoded because we know this the last date of the data
+      query =
+        "SELECT to_char(date, 'YYYY-MM') as fdate,* from covid_cases where (date = (date_trunc('month', date::date) + interval '1 month' - interval '1 day')::date or date = '2022-08-07') and date(date) between $1 and $2 order by date desc;";
+    } else {
+      query =
+        "SELECT to_char(date, 'YYYY-MM') as fdate,* from covid_cases where (date = (date_trunc('month', date::date) + interval '1 month' - interval '1 day')::date or date = '2022-08-07') and date(date) between $1 and $2;";
+    }
+
+    client.query(query, [start, end], (err, res) => {
+      if (err) {
+        return reject(err);
       }
-    );
+      return resolve(res.rows);
+    });
   });
 };
