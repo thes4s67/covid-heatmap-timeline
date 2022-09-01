@@ -30,16 +30,7 @@ export const selectDataByDay = (start, end, orderBy) => {
 export const selectDataByMonth = (start, end, orderBy) => {
   return new Promise((resolve, reject) => {
     let query = "";
-    // if (orderBy === "desc") {
-    //   //the 2022-08-07 is hardcoded because we know this the last date of the data
-    //   query =
-    //     "SELECT to_char(date, 'YYYY-MM') as fdate,* from covid_cases where (date = (date_trunc('month', date::date) + interval '1 month' - interval '1 day')::date or date = '2022-08-07') and date(date) between $1 and $2 order by date desc;";
-    // } else {
-    //   query =
-    //     "SELECT to_char(date, 'YYYY-MM') as fdate,* from covid_cases where (date = (date_trunc('month', date::date) + interval '1 month' - interval '1 day')::date or date = '2022-08-07') and date(date) between $1 and $2;";
-    // }
     if (orderBy === "desc") {
-      //the 2022-08-07 is hardcoded because we know this the last date of the data
       query =
         "select to_char(date_trunc('month', date), 'YYYY-MM') fdate, country, country_code, max(total_cases) as total_cases, max(total_vaccinations) total_vaccinations, max(total_boosters) total_boosters, max(total_deaths) total_deaths, sum(daily_cases) daily_cases, sum(daily_vaccinations) daily_vaccinations, sum(daily_deaths) daily_deaths from covid_cases where date between $1 and $2 group by date_trunc('month', date), country, country_code order by date_trunc('month', date) asc;";
     } else {
