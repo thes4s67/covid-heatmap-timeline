@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+//TODO: This hook is meant to make a counting animation for the stat card
+
 export const useCounter = (num) => {
   const [count, setCount] = useState(0);
 

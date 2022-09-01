@@ -1,6 +1,18 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Toolbar, Typography, IconButton, Divider } from "@mui/material";
+import {
+  Box,
+  Toolbar,
+  Typography,
+  IconButton,
+  Divider,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import { updateDrawerOpen, updateData } from "../src/store/slices/mapDataSlice";
@@ -54,7 +66,8 @@ const AppBar = styled(MuiAppBar, {
 const Home = ({ results }) => {
   const drawerOpen = useSelector((state) => state.mapData.drawerOpen);
   const dispatch = useDispatch();
-
+  const theme = useTheme();
+  const smallMedia = useMediaQuery(theme.breakpoints.down("sm"));
   useEffect(() => {
     dispatch(updateData(results));
   }, []);
@@ -62,7 +75,11 @@ const Home = ({ results }) => {
   return (
     <>
       <Box sx={{ display: "flex" }}>
-        <AppBar position="fixed" open={drawerOpen} color="error">
+        <AppBar
+          position="fixed"
+          open={smallMedia ? false : drawerOpen}
+          color="error"
+        >
           <Toolbar>
             <Typography
               variant="h6"
@@ -94,16 +111,36 @@ const Home = ({ results }) => {
         <PlayBar />
       </Box>
       <Box sx={{ display: "flex" }}>
-        <Main open={drawerOpen}>
-          <DrawerHeader />
-          <Box sx={{ backgroundColor: "#445972" }}>
-            <WorldMap />
-          </Box>
-          <StatsBar />
-        </Main>
-        <DrawerSideBar />
+        {smallMedia ? (
+          <>
+            <Dialog
+              open={smallMedia}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">{"Sorry!"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  This app has not been fully optimized for smaller screens yet.
+                  Please view on your desktop.
+                </DialogContentText>
+              </DialogContent>
+            </Dialog>
+          </>
+        ) : (
+          <>
+            <Main open={drawerOpen}>
+              <DrawerHeader />
+              <Box sx={{ backgroundColor: "#445972" }}>
+                <WorldMap />
+              </Box>
+              <StatsBar />
+            </Main>
+            <DrawerSideBar />
+          </>
+        )}
       </Box>
-      <Footer />
+      <Footer mediaSize={smallMedia} />
     </>
   );
 };

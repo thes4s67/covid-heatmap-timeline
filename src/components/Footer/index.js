@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
 import { Typography, Box } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
-const Footer = () => {
+const Footer = ({ mediaSize }) => {
   const drawerOpen = useSelector((state) => state.mapData.drawerOpen);
   return (
     <>
       <Box
         sx={{
-          width: drawerOpen ? `calc(100% - 247px)` : null,
+          width: drawerOpen && !mediaSize ? `calc(100% - 247px)` : null,
           display: "flex",
           px: 3,
           py: 1.5,
@@ -15,6 +15,7 @@ const Footer = () => {
           alignItems: "center",
           backgroundColor: "#000",
           color: "#fff",
+          mt: mediaSize ? 100 : null,
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column" }}>

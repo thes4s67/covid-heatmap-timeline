@@ -1,11 +1,9 @@
 import { Drawer } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import TimelineBar from "../TimelineBar";
 
 const DrawerSideBar = () => {
   const drawerOpen = useSelector((state) => state.mapData.drawerOpen);
-  const dispatch = useDispatch();
-
   return (
     <Drawer
       sx={{
