@@ -7,7 +7,7 @@ import moment from "moment";
 import Timeline from "@mui/lab/Timeline";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TimelineEntry from "./TimelineEntry";
-import { getDates } from "../../utils/helpers";
+import { getDates, sleep } from "../../utils/helpers";
 
 const TimelineBar = () => {
   const [scroll] = useScrollEvent();
@@ -60,13 +60,14 @@ const TimelineBar = () => {
           {`${date[1]} ${date[2]}`}
         </>
       );
-    }
-    else {
-return(      <>
-  {date[0]}
-  <br />
-  {date[2]}
-</>)
+    } else {
+      return (
+        <>
+          {date[0]}
+          <br />
+          {date[2]}
+        </>
+      );
     }
   };
 
@@ -161,32 +162,39 @@ return(      <>
                     idx={i}
                     date={c}
                   >
-                   {formatDate(tDate)}
+                    {formatDate(tDate)}
                   </TimelineEntry>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mt: 2,
-                    }}
-                  >
-                    {!loadingMore ? (
-                      <IconButton
-                        onClick={() => {
-                          setLoadingMore(true);
-                          handleLoadMore("loadMore");
-                          setLoadingMore(false);
-                        }}
-                      >
-                        <AddCircleIcon
-                          sx={{ width: "50px", height: "50px", color: "#fff" }}
-                        />
-                      </IconButton>
-                    ) : (
-                      <CircularProgress color="error" />
-                    )}
-                  </Box>
+                  {data.remaining > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mt: 2,
+                      }}
+                    >
+                      {!loadingMore ? (
+                        <IconButton
+                          onClick={async () => {
+                            setLoadingMore(true);
+                            await sleep(1.5);
+                            handleLoadMore("loadMore");
+                            setLoadingMore(false);
+                          }}
+                        >
+                          <AddCircleIcon
+                            sx={{
+                              width: "50px",
+                              height: "50px",
+                              color: "#fff",
+                            }}
+                          />
+                        </IconButton>
+                      ) : (
+                        <CircularProgress color="error" />
+                      )}
+                    </Box>
+                  ) : null}
                 </>
               );
             }

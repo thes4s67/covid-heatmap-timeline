@@ -1,33 +1,24 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  updateDrawerOpen,
-  updateData,
-} from "../src/store/slices/mapDataSlice";
-import { styled, useTheme } from "@mui/material/styles";
-import {
-  Box,
-  Toolbar,
-  Typography,
-  IconButton,
-  Divider,
-} from "@mui/material";
-import axios from "axios";
-import moment from "moment";
+import { Box, Toolbar, Typography, IconButton, Divider } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
-import MenuIcon from "@mui/icons-material/Menu";
+import { updateDrawerOpen, updateData } from "../src/store/slices/mapDataSlice";
+import axios from "axios";
+import { baseUrl } from "../src/utils/API";
 import WorldMap from "../src/components/WorldMap";
 import DrawerHeader from "../src/components/Drawer/DrawerHeader";
 import DrawerSideBar from "../src/components/Drawer/DrawerSideBar";
 import FilterBar from "../src/components/FilterBar";
 import PlayBar from "../src/components/PlayBar";
-import { baseUrl } from "../src/utils/API";
 import StatsBar from "./../src/components/StatsBar";
+import Footer from "../src/components/Footer";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    // padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -62,8 +53,6 @@ const AppBar = styled(MuiAppBar, {
 
 const Home = ({ results }) => {
   const drawerOpen = useSelector((state) => state.mapData.drawerOpen);
-  const selectedCountry = useSelector((state) => state.mapData.selectedCountry);
-  const data = useSelector((state) => state.mapData.data);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -83,15 +72,21 @@ const Home = ({ results }) => {
             >
               Covid Heatmap Timeline
             </Typography>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="end"
-              onClick={() => dispatch(updateDrawerOpen(true))}
-              sx={{ ...(drawerOpen && { display: "none" }) }}
-            >
-              <MenuIcon />
-            </IconButton>
+            {drawerOpen ? (
+              <IconButton onClick={() => dispatch(updateDrawerOpen(false))}>
+                <ChevronRightIcon sx={{ color: "#fff" }} />
+              </IconButton>
+            ) : (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="end"
+                onClick={() => dispatch(updateDrawerOpen(true))}
+                sx={{ ...(drawerOpen && { display: "none" }) }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
           </Toolbar>
           <Divider />
           <FilterBar />
@@ -104,18 +99,11 @@ const Home = ({ results }) => {
           <Box sx={{ backgroundColor: "#445972" }}>
             <WorldMap />
           </Box>
-          {selectedCountry === "" ? (
-            <Box sx={{ p: 5, textAlign: "center", alignItems: "center" }}>
-              <Typography variant="h5" sx={{ fontWeight: 700, mt: 5 }}>
-                Hover over a country for stats...
-              </Typography>
-            </Box>
-          ) : (
-            <StatsBar />
-          )}
+          <StatsBar />
         </Main>
         <DrawerSideBar />
       </Box>
+      <Footer />
     </>
   );
 };

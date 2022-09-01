@@ -5,11 +5,11 @@ export const useScrollEvent = () => {
 
   useEffect(() => {
     window.addEventListener("scroll", (e) => {
-        const win = e.currentTarget;
-        console.log(win.scrollY, win.scrollX);
+      const win = e.currentTarget;
+      // alert(win.scrollY, win.scrollX);
       setScroll(e);
     });
-    window.scrollTo({x: 0, y: 200})
+    window.scrollTo({ x: 0, y: 200 });
     return () => {
       window.removeEventListener("scroll", () => setScroll(null));
     };

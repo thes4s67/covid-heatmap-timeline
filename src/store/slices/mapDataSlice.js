@@ -23,7 +23,7 @@ export const mapDataSlice = createSlice({
   name: "mapData",
   initialState: {
     drawerOpen: true,
-    selectedCountry: "",
+    selectedCountry: "United States",
     settings: {
       filter: "total_cases",
       orderBy: "asc",
@@ -33,16 +33,17 @@ export const mapDataSlice = createSlice({
       daily: {
         asc: {
           nextDate: "2020-02-20",
-          total: 0,
           rawData: {},
+          //all remaining values are fixed since our dataset is fixed
+          remaining: 931,
           timeline: [],
           currDate: "",
           timelineIdx: null,
         },
         desc: {
           nextDate: "",
-          total: 0,
           rawData: {},
+          remaining: 931,
           timeline: [],
           currDate: "",
           timelineIdx: null,
@@ -51,16 +52,16 @@ export const mapDataSlice = createSlice({
       monthly: {
         asc: {
           nextDate: "",
-          total: 0,
           rawData: {},
+          remaining: 32,
           timeline: [],
           currDate: "",
           timelineIdx: null,
         },
         desc: {
           nextDate: "",
-          total: 0,
           rawData: {},
+          remaining: 32,
           timeline: [],
           currDate: "",
           timelineIdx: null,
@@ -110,6 +111,7 @@ export const mapDataSlice = createSlice({
               .format("YYYY-MM-DD"),
             timelineIdx: 0,
             currDate: t[0],
+            remaining: 931 - t.length,
           },
         },
       };
@@ -120,14 +122,15 @@ export const mapDataSlice = createSlice({
       //do something /w state
     },
     [getMoreData.fulfilled]: (state, { payload, meta }) => {
-
       const { sort, start, end, orderBy } = meta.arg;
+      const uniqueDates = getUniqueDates(payload.results);
       state.data = {
         ...state.data,
         [sort]: {
           ...state.data[sort],
           [orderBy]: {
             ...state.data[sort][orderBy],
+            remaining: state.data[sort][orderBy].remaining - uniqueDates.length,
             nextDate: getNextDate(sort, orderBy, payload.results),
             rawData: hashmap(
               payload.results,
@@ -135,10 +138,7 @@ export const mapDataSlice = createSlice({
             ),
             timeline: [].concat.apply(
               [],
-              [
-                ...state.data[sort][orderBy].timeline,
-                getUniqueDates(payload.results),
-              ]
+              [...state.data[sort][orderBy].timeline, uniqueDates]
             ),
             currDate:
               state.data[sort][orderBy].currDate === ""

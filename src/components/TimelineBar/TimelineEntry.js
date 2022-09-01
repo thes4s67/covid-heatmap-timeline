@@ -16,14 +16,15 @@ const TimelineEntry = ({ active, idx, date, children }) => {
           <TimelineDot
             variant={active ? "outlined" : "filled"}
             color={active ? "error" : "warning"}
-            onClick={() =>
+            onClick={() => {
+              console.log(date, "this is the date from clicking");
               dispatch(
                 updateSettings({
                   timelineIdx: idx,
                   currDate: date,
                 })
-              )
-            }
+              );
+            }}
           />
         </Box>
         <TimelineConnector />

@@ -10,13 +10,14 @@ import { getHexColor, getValue } from "../../utils/helpers";
 
 const WorldMap = () => {
   const settings = useSelector((state) => state.mapData.settings);
+  const drawerOpen = useSelector((state) => state.mapData.drawerOpen);
   const data = useSelector(
     (state) => state.mapData.data[settings.sortBy][settings.orderBy]
   );
   const dispatch = useDispatch();
   return (
-    <ComposableMap projection="geoEqualEarth" height={295}>
-      <ZoomableGroup>
+    <ComposableMap projection="geoEqualEarth" height={227}>
+      <ZoomableGroup zoom={1}>
         <Geographies geography={"/data/countries-50m.json"}>
           {({ geographies }) =>
             geographies.map((geo) => {
@@ -46,7 +47,7 @@ const WorldMap = () => {
                       outline: "none",
                     },
                     pressed: {
-                      fill: "#E42",
+                      fill: "#201e1e",
                       outline: "none",
                     },
                   }}

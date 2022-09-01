@@ -18,7 +18,7 @@ const CountryCard = () => {
   const dispatch = useDispatch();
   return (
     <>
-      <Card sx={{ p: 3, backgroundColor: "#000" }}>
+      <Card sx={{ p: 3, backgroundColor: "#121212", borderRadius: 2 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Flag country_code={getCountryCode(data.rawData, country)} />
           {country !== "World" ? (
@@ -81,7 +81,7 @@ const CountryCard = () => {
             variant="subtitle2"
             sx={{ color: "#fff", fontWeight: 350 }}
           >
-            {settings.sortBy === "daily" ? "as of " : "month of "}{" "}
+            {"as of "}{" "}
             {settings.sortBy === "daily"
               ? moment(data.currDate).format("MMM DD YYYY")
               : moment(data.currDate).format("MMM YYYY")}
