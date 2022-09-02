@@ -32,7 +32,7 @@ export const selectDataByMonth = (start, end, orderBy) => {
     let query = "";
     if (orderBy === "desc") {
       query =
-        "select to_char(date_trunc('month', date), 'YYYY-MM') fdate, country, country_code, max(total_cases) as total_cases, max(total_vaccinations) total_vaccinations, max(total_boosters) total_boosters, max(total_deaths) total_deaths, sum(daily_cases) daily_cases, sum(daily_vaccinations) daily_vaccinations, sum(daily_deaths) daily_deaths from covid_cases where date between $1 and $2 group by date_trunc('month', date), country, country_code order by date_trunc('month', date) asc;";
+        "select to_char(date_trunc('month', date), 'YYYY-MM') fdate, country, country_code, max(total_cases) as total_cases, max(total_vaccinations) total_vaccinations, max(total_boosters) total_boosters, max(total_deaths) total_deaths, sum(daily_cases) daily_cases, sum(daily_vaccinations) daily_vaccinations, sum(daily_deaths) daily_deaths from covid_cases where date between $1 and $2 group by date_trunc('month', date), country, country_code order by date_trunc('month', date) desc;";
     } else {
       query =
         "select to_char(date_trunc('month', date), 'YYYY-MM') fdate, country, country_code, max(total_cases) as total_cases, max(total_vaccinations) total_vaccinations, max(total_boosters) total_boosters, max(total_deaths) total_deaths, sum(daily_cases) daily_cases, sum(daily_vaccinations) daily_vaccinations, sum(daily_deaths) daily_deaths from covid_cases where date between $1 and $2 group by date_trunc('month', date), country, country_code order by date_trunc('month', date) asc;";

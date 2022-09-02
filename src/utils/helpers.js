@@ -19,11 +19,11 @@ export const getNextDate = (sortBy, orderBy, data) => {
       .subtract(1, "d")
       .format("YYYY-MM-DD");
   if (sortBy === "monthly" && orderBy === "asc")
-    return moment(data[data.length - 1].date)
-      .add(1, "d")
+    return moment(data[data.length - 1].fdate)
+      .add(1, "M")
       .format("YYYY-MM-DD");
   if (sortBy === "monthly" && orderBy === "desc") {
-    let date = data[data.length - 1].date;
+    let date = data[data.length - 1].fdate;
     date = moment(date).subtract(1, "year");
     date = moment(date).startOf("month").format("YYYY-MM-DD");
     return date;
